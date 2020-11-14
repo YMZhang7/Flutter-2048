@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swipedetector/swipedetector.dart';
 import 'bloc/blocs.dart';
+import 'views/screens.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,23 +34,9 @@ class GameDashBoard extends StatelessWidget {
         child: BlocBuilder<PlayBloc, PlayState>(
           builder: (context, state) {
             if (state is PlayFailed){
-              return GestureDetector(
-                onTap: () => BlocProvider.of<PlayBloc>(context).add(GameBegins()),
-                child: Container(
-                  color: Colors.grey,
-                  alignment: Alignment.center,
-                  child: Text("You Failed", style: TextStyle(fontSize: 50),),
-                ),
-              );
+              return GameFailedScreen();
             } else if (state is PlayInitial){
-              return Container(
-                color: Colors.lightBlue,
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: () => BlocProvider.of<PlayBloc>(context).add(GameBegins()),
-                  child: Text("Tap to start playing", style: TextStyle(fontSize: 50),),
-                ),
-              );
+              return GameInitialScreen();
             } else {
               return Container(
                 color: Colors.white,
