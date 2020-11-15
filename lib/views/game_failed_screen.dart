@@ -7,7 +7,7 @@ class GameFailedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      color: Colors.lightGreen.withOpacity(0.5),
+      color: Colors.lightGreen.withOpacity(0.2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

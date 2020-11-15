@@ -1,46 +1,47 @@
 import 'package:equatable/equatable.dart';
+import '../models/board.dart';
 
 
 abstract class PlayState extends Equatable{
-  final List<int> numbers;
-  const PlayState(this.numbers);
+  final Board board;
+  const PlayState(this.board);
 
   @override
-  List<Object> get props => [numbers];
+  List<Object> get props => [board];
 }
 
 class PlayInitial extends PlayState {
-  const PlayInitial(List<int> numbers):super(numbers);
+  const PlayInitial(Board board):super(board);
   @override
-  String toString() => 'PlayInitial {numbers: $numbers}';
+  String toString() => 'PlayInitial {board: $board}';
 }
 
 class PlayStart extends PlayState {
-  const PlayStart(List<int> numbers):super(numbers);
+  const PlayStart(Board board):super(board);
   @override
-  String toString() => 'PlayStart {numbers: $numbers}';
+  String toString() => 'PlayInitial {board: $board}';
 }
 
 class PlayInProcess1 extends PlayState {
-  const PlayInProcess1(List<int> numbers):super(numbers);
+  const PlayInProcess1(Board board):super(board);
   @override
-  String toString() => 'PlayInProcess {numbers: $numbers}';
+  String toString() => 'PlayInitial {board: $board}';
 }
 
 class PlayInProcess2 extends PlayState {
-  const PlayInProcess2(List<int> numbers):super(numbers);
+  const PlayInProcess2(Board board):super(board);
   @override
-  String toString() => 'PlayInProcess {numbers: $numbers}';
+  String toString() => 'PlayInitial {board: $board}';
 }
 
 class PlaySuccess extends PlayState {
-  const PlaySuccess(List<int> numbers):super(numbers);
+  const PlaySuccess(Board board):super(board);
   @override
-  String toString() => 'PlaySuccess {numbers: $numbers}';
+  String toString() => 'PlayInitial {board: $board}';
 }
 
 class PlayFailed extends PlayState {
-  const PlayFailed(List<int> numbers):super(numbers);
+  const PlayFailed(Board board):super(board);
   @override
-  String toString() => 'PlayFailed {numbers: $numbers}';
+  String toString() => 'PlayInitial {board: $board}';
 }

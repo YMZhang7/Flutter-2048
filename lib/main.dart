@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swipedetector/swipedetector.dart';
 import 'bloc/blocs.dart';
 import 'views/screens.dart';
+import 'models/board.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,7 +31,6 @@ class GameDashBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        // onTap: () => BlocProvider.of<PlayBloc>(context).add(GameBegins()),
         child: BlocBuilder<PlayBloc, PlayState>(
           builder: (context, state) {
             if (state is PlayFailed){
@@ -74,7 +74,7 @@ class GameDashBoard extends StatelessWidget {
                     ),
                     height: 350,
                     width: 350,
-                    child: getMatrix(state.numbers),
+                    child: getMatrix(state.board),
                   ),
                 ),
               );
@@ -86,62 +86,69 @@ class GameDashBoard extends StatelessWidget {
     
   }
 
-  Widget getMatrix(List<int> numbers){
+  Widget getMatrix(Board board){
+    List<int> numbers = board.numbers;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            cube(numbers[0]),
-            cube(numbers[1]),
-            cube(numbers[2])
+            NumberCube(number: numbers[0], isNew: 0 ==board.newNumberIndex,),
+            NumberCube(number: numbers[1], isNew: 1 ==board.newNumberIndex),
+            NumberCube(number: numbers[2], isNew: 2 ==board.newNumberIndex)
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            cube(numbers[3]),
-            cube(numbers[4]),
-            cube(numbers[5]),
+            NumberCube(number: numbers[3], isNew: 3 ==board.newNumberIndex),
+            NumberCube(number: numbers[4], isNew: 4 ==board.newNumberIndex),
+            NumberCube(number: numbers[5], isNew: 5 ==board.newNumberIndex),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            cube(numbers[6]),
-            cube(numbers[7]),
-            cube(numbers[8]),
+            NumberCube(number: numbers[6], isNew: 6 ==board.newNumberIndex),
+            NumberCube(number: numbers[7], isNew: 7 ==board.newNumberIndex),
+            NumberCube(number: numbers[8], isNew: 8 ==board.newNumberIndex),
           ],
         ),
       ],
     );
   }
 
-  Widget cube(int number){
-    if (number != 0){
-      return Container(
-        width: 100,
-        height: 100,
-        margin: EdgeInsets.all(5.0),
-        decoration: BoxDecoration(
-          color: Colors.yellow,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Text(number.toString(), style: TextStyle(fontSize: 40),),
-        alignment: Alignment.center,
-      );
-    } else {
-      return Container(
-        width: 100,
-        height: 100,
-        margin: EdgeInsets.all(5.0),
-        decoration: BoxDecoration(
-          color: Colors.yellow,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        alignment: Alignment.center,
-      );
-    }
-  }
+  // // Widget cube(int number, bool isNew){
+  //   if (number != 0){
+      // if (isNew){
+      //   return AnimatedContainer(
+      //     duration: null
+      //   );
+      // } else {
+      //   return Container(
+      //     width: 100,
+      //     height: 100,
+      //     margin: EdgeInsets.all(5.0),
+      //     decoration: BoxDecoration(
+      //       color: Colors.yellow,
+      //       borderRadius: BorderRadius.all(Radius.circular(10)),
+      //     ),
+      //     child: Text(number.toString(), style: TextStyle(fontSize: 40),),
+      //     alignment: Alignment.center,
+  //       );
+  //     }
+  //   } else {
+  //     return Container(
+  //       width: 100,
+  //       height: 100,
+  //       margin: EdgeInsets.all(5.0),
+  //       decoration: BoxDecoration(
+  //         color: Colors.yellow,
+  //         borderRadius: BorderRadius.all(Radius.circular(10)),
+  //       ),
+  //       alignment: Alignment.center,
+  //     );
+  //   }
+  // }
 }
