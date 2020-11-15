@@ -14,7 +14,6 @@ class _NumberCubeState extends State<NumberCube> {
   Timer _timer;
   bool change = false;
   
-
   _NumberCubeState(){
     _timer = new Timer(const Duration(seconds: 2), (){
       setState(() {
