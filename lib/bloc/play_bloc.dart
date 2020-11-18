@@ -5,6 +5,7 @@ import 'blocs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import '../models/board.dart';
+// import '../models/cube.dart';
 
 
 class PlayBloc extends Bloc<PlayEvent, PlayState> {
@@ -106,12 +107,51 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
   }
 
   Stream<PlayState> _mapSwipeUpToState (SwipeUp event) async*{
-    List<int> currentBoard = state.board.numbers;
-    Board result = processMatrix(currentBoard);
+    List<int> numbers = state.board.numbers;
+    List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
+    // 2nd row
+    for (int i = 3; i <= 5; i++){
+      if (numbers[i] == numbers[i-3]){
+        numbers[i-3] *= 2;
+        numbers[i] = 0;
+        isEditted[i-3] = true;
+      } else if (numbers[i-3] == 0){
+        numbers[i-3] = numbers[i];
+        numbers[i] = 0;
+      }
+    }
+    // 3rd row
+    for (int i = 6; i <= 8; i++){
+      if (numbers[i-3] != 0){
+        if (numbers[i-3] == numbers[i]){
+          numbers[i-3] *= 2;
+          numbers[i] = 0;
+        }
+      } else {
+        if (numbers[i-6] != 0){
+          if (numbers[i-6] == numbers[i]){
+            if (!isEditted[i-6]){
+              numbers[i-6] *= 2;
+              numbers[i] = 0;
+            } else {
+              numbers[i-3] = numbers[i];
+              numbers[i] = 0;
+            }
+          } else {
+            numbers[i-3] = numbers[i];
+            numbers[i] = 0;
+          }
+        } else {
+          numbers[i-6] = numbers[i];
+          numbers[i] = 0;
+        }
+      }
+    }
+    Board result = addNewNumber(numbers);
     if (isFull(result.numbers)){
-      yield PlayFailed(result);
-    } else if (isSuccessful(result.numbers)){
-      yield PlaySuccess(result);
+      yield PlayFailed(new Board(result.numbers, -1));
+    } else if (isSuccessful(numbers)){
+      yield PlaySuccess(new Board(result.numbers, -1));
     } else {
       if (state is PlayInProcess1){
         yield PlayInProcess2(result);
@@ -122,58 +162,175 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
   }
 
   Stream<PlayState> _mapSwipeDownToState (SwipeDown event) async*{
-    List<int> currentBoard = state.board.numbers;
-    List<int> transformedBoard = [currentBoard[6], currentBoard[7], currentBoard[8], currentBoard[3], currentBoard[4], currentBoard[5], currentBoard[0], currentBoard[1], currentBoard[2]];
-    Board processed = processMatrix(transformedBoard);
-    List<int> temp = processed.numbers;
-    List<int> result = [temp[6], temp[7],temp[8],temp[3],temp[4],temp[5],temp[0],temp[1],temp[2]];
-    if (isFull(result)){
-      yield PlayFailed(new Board(result, -1));
-    } else if (isSuccessful(result)){
-      yield PlaySuccess(new Board(result, -1));
+    List<int> numbers = state.board.numbers;
+    List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
+    // process row/col next to the fixed one
+    for (int i = 3; i < 6; i++){
+      // same number -> merge
+      if (numbers[i] == numbers[i+3]){
+        numbers[i+3] *= 2;
+        numbers[i] = 0;
+        isEditted[i+3] = true;
+      } else if(numbers[i+3] == 0){
+        // empty -> shift
+        numbers[i+3] = numbers[i];
+        numbers[i] = 0;
+      }
+    }
+    for (int i = 0; i < 3; i++){
+      if (numbers[i+3] != 0){
+        if (numbers[i] == numbers[i+3]){
+          numbers[i+3] *= 2;
+          numbers[i] = 0;
+        }
+      } else {
+        if (numbers[i+6] != 0){
+          if (numbers[i+6] == numbers[i]){
+            if (isEditted[i+6]){
+              numbers[i+3] = numbers[i];
+              numbers[i] = 0;
+            } else {
+              numbers[i+6] *= 2;
+              numbers[i] = 0;
+            }
+          } else {
+            numbers[i+3] = numbers[i];
+            numbers[i] = 0;
+          }
+        } else {
+          numbers[i+6] = numbers[i];
+          numbers[i] = 0;
+        }
+      }
+    }
+    Board result = addNewNumber(numbers);
+    if (isFull(result.numbers)){
+      yield PlayFailed(new Board(result.numbers, -1));
+    } else if (isSuccessful(numbers)){
+      yield PlaySuccess(new Board(result.numbers, -1));
     } else {
       if (state is PlayInProcess1){
-        yield PlayInProcess2(new Board(result, processed.newNumberIndex));
+        yield PlayInProcess2(result);
       } else {
-        yield PlayInProcess1(new Board(result, processed.newNumberIndex));
+        yield PlayInProcess1(result);
       }
     }
   }
 
   Stream<PlayState> _mapSwipeLeftToState(SwipeLeft event) async*{
-    List<int> currentBoard = state.board.numbers;
-    List<int> transformedBoard = [currentBoard[6], currentBoard[3], currentBoard[0], currentBoard[7], currentBoard[4], currentBoard[1], currentBoard[8], currentBoard[5], currentBoard[2]];
-    Board processed = processMatrix(transformedBoard);
-    List<int> temp = processed.numbers;
-    List<int> result = [temp[2], temp[5],temp[8],temp[1],temp[4],temp[7],temp[0],temp[3],temp[6]];
-    if (isFull(result)){
-      yield PlayFailed(new Board(result, -1));
-    } else if (isSuccessful(result)){
-      yield PlaySuccess(new Board(result, -1));
+    List<int> numbers = state.board.numbers;
+    List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
+    for (int i = 0; i < numbers.length; i++){
+      // process row/col next to the fixed one
+      if (i == 1 || i == 4 || i == 7){
+        // same number -> merge
+        if (numbers[i] == numbers[i-1]){
+          numbers[i-1] *= 2;
+          numbers[i] = 0;
+          isEditted[i-1] = true;
+        } else if(numbers[i-1] == 0){
+          // empty -> shift
+          numbers[i-1] = numbers[i];
+          numbers[i] = 0;
+        }
+      }
+      // third col
+      if (i == 2 || i == 5 || i == 8){
+        if (numbers[i-1] != 0){
+          if (numbers[i] == numbers[i-1]){
+            numbers[i-1] *= 2;
+            numbers[i] = 0;
+          }
+        } else {
+          if (numbers[i-2] != 0){
+            if (numbers[i-2] == numbers[i]){
+              if (isEditted[i-2]){
+                numbers[i-1] = numbers[i];
+                numbers[i] = 0;
+              } else {
+                numbers[i-2] *= 2;
+                numbers[i] = 0;
+              }
+            } else {
+              numbers[i-1] = numbers[i];
+              numbers[i] = 0;
+            }
+          } else {
+            numbers[i-2] = numbers[i];
+            numbers[i] = 0;
+          }
+        }
+      }
+    }
+    Board result = addNewNumber(numbers);
+    if (isFull(result.numbers)){
+      yield PlayFailed(new Board(result.numbers, -1));
+    } else if (isSuccessful(numbers)){
+      yield PlaySuccess(new Board(result.numbers, -1));
     } else {
       if (state is PlayInProcess1){
-        yield PlayInProcess2(new Board(result, processed.newNumberIndex));
+        yield PlayInProcess2(result);
       } else {
-        yield PlayInProcess1(new Board(result, processed.newNumberIndex));
+        yield PlayInProcess1(result);
       }
     }
   }
 
   Stream<PlayState> _mapSwipeRightToState(SwipeRight event) async*{
-    List<int> currentBoard = state.board.numbers;
-    List<int> transformedBoard = [currentBoard[2], currentBoard[5], currentBoard[8], currentBoard[1], currentBoard[4], currentBoard[7], currentBoard[0], currentBoard[3], currentBoard[6]];
-    Board processed = processMatrix(transformedBoard);
-    List<int> temp = processed.numbers;
-    List<int> result = [temp[6], temp[3],temp[0],temp[7],temp[4],temp[1],temp[8],temp[5],temp[2]];
-    if (isFull(result)){
-      yield PlayFailed(new Board(result, -1));
-    } else if (isSuccessful(result)){
-      yield PlaySuccess(new Board(result, -1));
+    List<int> numbers = state.board.numbers;
+    List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
+    for (int i = 0; i < numbers.length; i++){
+      // process row/col next to the fixed one
+      if (i == 1 || i == 4 || i == 7){
+        // same number -> merge
+        if (numbers[i] == numbers[i+1]){
+          numbers[i+1] *= 2;
+          numbers[i] = 0;
+          isEditted[i+1] = true;
+        } else if(numbers[i+1] == 0){
+          // empty -> shift
+          numbers[i+1] = numbers[i];
+          numbers[i] = 0;
+        }
+      }
+      // third col
+      if (i == 0 || i == 3 || i == 6){
+        if (numbers[i+1] != 0){
+          if (numbers[i] == numbers[i+1]){
+            numbers[i+1] *= 2;
+            numbers[i] = 0;
+          }
+        } else {
+          if (numbers[i+2] != 0){
+            if (numbers[i+2] == numbers[i]){
+              if (isEditted[i+2]){
+                numbers[i+1] = numbers[i];
+                numbers[i] = 0;
+              } else {
+                numbers[i+2] *= 2;
+                numbers[i] = 0;
+              }
+            } else {
+              numbers[i+1] = numbers[i];
+              numbers[i] = 0;
+            }
+          } else {
+            numbers[i+2] = numbers[i];
+            numbers[i] = 0;
+          }
+        }
+      }
+    }
+    Board result = addNewNumber(numbers);
+    if (isFull(result.numbers)){
+      yield PlayFailed(new Board(result.numbers, -1));
+    } else if (isSuccessful(numbers)){
+      yield PlaySuccess(new Board(result.numbers, -1));
     } else {
       if (state is PlayInProcess1){
-        yield PlayInProcess2(new Board(result, processed.newNumberIndex));
+        yield PlayInProcess2(result);
       } else {
-        yield PlayInProcess1(new Board(result, processed.newNumberIndex));
+        yield PlayInProcess1(result);
       }
     }
   }
@@ -187,7 +344,7 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     return false;
   }
 
-  List<int> addNewNumber(List<int> numbers){
+  Board addNewNumber(List<int> numbers){
     var random = new Random();
     var emptySlots = [];
     var options = [2, 4];
@@ -200,6 +357,8 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     print(position);
     var number = options[random.nextInt(2)];
     numbers[position] = number;
-    return numbers;
+    Board result = new Board(numbers, position);
+    return result;
   }
+
 }

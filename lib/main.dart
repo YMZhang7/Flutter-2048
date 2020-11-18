@@ -119,18 +119,4 @@ class GameDashBoard extends StatelessWidget {
       ],
     );
   }
-
-  Widget cubeContainer(Widget cube){
-    return Container(
-      width: 100,
-      height: 100,
-      // margin: EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      // alignment: Alignment.center,
-      child: cube,
-    );
-  }
 }
