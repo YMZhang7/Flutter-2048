@@ -4,6 +4,7 @@ import 'package:swipedetector/swipedetector.dart';
 import 'bloc/blocs.dart';
 import 'views/screens.dart';
 import 'models/board.dart';
+import './custom_colour.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,60 +28,88 @@ class MyApp extends StatelessWidget {
 }
 
 class GameDashBoard extends StatelessWidget {
+  List<int> previous_board;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        child: BlocBuilder<PlayBloc, PlayState>(
-          builder: (context, state) {
-            if (state is PlayFailed){
-              return GameFailedScreen();
-            } else if (state is PlayInitial){
-              return GameInitialScreen();
-            } else {
-              return Container(
-                color: Colors.white,
-                alignment: Alignment.center,
-                child: SwipeDetector(
-                  onSwipeUp: () {
-                    BlocProvider.of<PlayBloc>(context).add(SwipeUp());
-                    print('swiped up');
-                  } ,
-                  onSwipeDown: () {
-                    BlocProvider.of<PlayBloc>(context).add(SwipeDown());
-                    print('swiped down');
-                  },
-                  onSwipeLeft: () {
-                    BlocProvider.of<PlayBloc>(context).add(SwipeLeft());
-                    print('swiped left');
-                  },
-                  onSwipeRight: () {
-                    BlocProvider.of<PlayBloc>(context).add(SwipeRight());
-                    print('swiped right');
-                  },
-                  swipeConfiguration: SwipeConfiguration(
-                    verticalSwipeMinVelocity: 100.0,
-                    verticalSwipeMinDisplacement: 30.0,
-                    verticalSwipeMaxWidthThreshold:100.0,
-                    horizontalSwipeMaxHeightThreshold: 100.0,
-                    horizontalSwipeMinDisplacement:30.0,
-                    horizontalSwipeMinVelocity: 100.0
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.all(Radius.circular(10))
+      body: BlocBuilder<PlayBloc, PlayState>(
+        builder: (context, state) {
+          if (state is PlayFailed){
+            return GameFailedScreen();
+          } else if (state is PlayInitial){
+            return GameInitialScreen();
+          } else {
+            // PlayInProcess1 & 2
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  color: Colors.white,
+                  alignment: Alignment.center,
+                  child: SwipeDetector(
+                    onSwipeUp: () {
+                      BlocProvider.of<PlayBloc>(context).add(SwipeUp());
+                      print('swiped up');
+                    } ,
+                    onSwipeDown: () {
+                      BlocProvider.of<PlayBloc>(context).add(SwipeDown());
+                      print('swiped down');
+                    },
+                    onSwipeLeft: () {
+                      BlocProvider.of<PlayBloc>(context).add(SwipeLeft());
+                      print('swiped left');
+                    },
+                    onSwipeRight: () {
+                      BlocProvider.of<PlayBloc>(context).add(SwipeRight());
+                      print('swiped right');
+                    },
+                    swipeConfiguration: SwipeConfiguration(
+                      verticalSwipeMinVelocity: 100.0,
+                      verticalSwipeMinDisplacement: 30.0,
+                      verticalSwipeMaxWidthThreshold:100.0,
+                      horizontalSwipeMaxHeightThreshold: 100.0,
+                      horizontalSwipeMinDisplacement:30.0,
+                      horizontalSwipeMinVelocity: 100.0
                     ),
-                    height: 350,
-                    width: 350,
-                    child: getMatrix(state.board),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
+                      height: 350,
+                      width: 350,
+                      child: getMatrix(state.board),
+                    ),
                   ),
                 ),
-              );
-            }
+                SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    RaisedButton(
+                      onPressed: (){
+                        print('hh');
+                      },
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text('Exit', style: TextStyle(fontSize: 20),),
+                      color: Colors.red,
+                    ),
+                    RaisedButton(
+                      onPressed: (){
+                        // TODO
+                      },
+                      color: Colors.lightGreen,
+                      child: Text('Back', style: TextStyle(fontSize: 20),),
+                    )
+                  ],
+                ),
+              ],
+            );
           }
-        ),
+        }
       ),
     );
     

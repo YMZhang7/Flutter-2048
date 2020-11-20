@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../custom_colour.dart';
+
 
 class NumberCubeNew extends StatefulWidget {
   final int number;
@@ -28,6 +30,23 @@ class _NumberCubeNewState extends State<NumberCubeNew> with SingleTickerProvider
   }
   @override
   Widget build(BuildContext context) {
+    Color color;
+    switch(widget.number){
+      case 2:
+        color = Theme.of(context).colorScheme.cube1;
+        break;
+      case 4:
+        color = Theme.of(context).colorScheme.cube2;
+        break;
+      case 8:
+        color = Theme.of(context).colorScheme.cube3;
+        break;
+      case 16:
+        color = Theme.of(context).colorScheme.cube4;
+        break;
+      default:
+        color = Theme.of(context).colorScheme.cube5;
+    }
     _controller.forward();
     return FadeTransition(
       opacity: _animation,
@@ -36,7 +55,7 @@ class _NumberCubeNewState extends State<NumberCubeNew> with SingleTickerProvider
         height: 100,
         margin: EdgeInsets.all(5.0),
         decoration: BoxDecoration(
-          color: Colors.yellow,
+          color: color,
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Text(widget.number.toString(), style: TextStyle(fontSize: 40),),

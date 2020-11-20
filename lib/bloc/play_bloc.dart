@@ -5,7 +5,6 @@ import 'blocs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
 import '../models/board.dart';
-// import '../models/cube.dart';
 
 
 class PlayBloc extends Bloc<PlayEvent, PlayState> {
@@ -312,6 +311,7 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
               }
             } else {
               numbers[i+1] = numbers[i];
+              print('hhhhhhhhhhhhh');
               numbers[i] = 0;
             }
           } else {
