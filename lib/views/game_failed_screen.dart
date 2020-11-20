@@ -19,7 +19,7 @@ class GameFailedScreen extends StatelessWidget {
           ),
           SizedBox(height: 5,),
           RaisedButton(
-            onPressed: () => BlocProvider.of<PlayBloc>(context).add(GameBegins()),
+            onPressed: () => BlocProvider.of<PlayBloc>(context).add(QuitGame()),
             child: Text('Quit'),
           ),
         ],

@@ -10,17 +10,6 @@ class NumberCube extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!isNew){
       if (number != 0){
-        // return Container(
-        //   width: 100,
-        //   height: 100,
-        //   margin: EdgeInsets.all(5.0),
-        //   decoration: BoxDecoration(
-        //     color: Theme.of(context).colorScheme.cube1,
-        //     borderRadius: BorderRadius.all(Radius.circular(10)),
-        //   ),
-        //   child: Text(number.toString(), style: TextStyle(fontSize: 40),),
-        //   alignment: Alignment.center,
-        // );
         return buildCube(context, number);
       } else {
         return Container(

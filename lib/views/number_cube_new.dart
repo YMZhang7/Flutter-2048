@@ -12,6 +12,7 @@ class NumberCubeNew extends StatefulWidget {
 class _NumberCubeNewState extends State<NumberCubeNew> with SingleTickerProviderStateMixin{
   AnimationController _controller;
   Animation _animation;
+
   @override
   void initState(){
     _controller = AnimationController(
@@ -22,7 +23,9 @@ class _NumberCubeNewState extends State<NumberCubeNew> with SingleTickerProvider
       begin: 0.0,
       end: 1.0,
     ).animate(_controller);
+    super.initState();
   }
+
   @override
   void dispose() {
     _controller.dispose();

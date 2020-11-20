@@ -15,3 +15,7 @@ class SwipeRight extends PlayEvent{}
 class SwipeUp extends PlayEvent{}
 
 class SwipeDown extends PlayEvent{}
+
+class QuitGame extends PlayEvent{}
+
+class GetPreviousState extends PlayEvent{}

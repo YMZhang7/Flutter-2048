@@ -4,7 +4,6 @@ import 'package:swipedetector/swipedetector.dart';
 import 'bloc/blocs.dart';
 import 'views/screens.dart';
 import 'models/board.dart';
-import './custom_colour.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,7 +27,6 @@ class MyApp extends StatelessWidget {
 }
 
 class GameDashBoard extends StatelessWidget {
-  List<int> previous_board;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +89,7 @@ class GameDashBoard extends StatelessWidget {
                   children: [
                     RaisedButton(
                       onPressed: (){
-                        print('hh');
+                        BlocProvider.of<PlayBloc>(context).add(QuitGame());
                       },
                       padding: const EdgeInsets.all(0.0),
                       child: Text('Exit', style: TextStyle(fontSize: 20),),
@@ -99,7 +97,8 @@ class GameDashBoard extends StatelessWidget {
                     ),
                     RaisedButton(
                       onPressed: (){
-                        // TODO
+                        BlocProvider.of<PlayBloc>(context).add(GetPreviousState());
+                        print('hhhh');
                       },
                       color: Colors.lightGreen,
                       child: Text('Back', style: TextStyle(fontSize: 20),),

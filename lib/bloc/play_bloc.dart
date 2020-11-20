@@ -8,7 +8,7 @@ import '../models/board.dart';
 
 
 class PlayBloc extends Bloc<PlayEvent, PlayState> {
-  PlayBloc() : super(PlayInitial(new Board([0,0,0,0,0,0,0,0,0], -1)));
+  PlayBloc() : super(PlayInitial(new Board([0,0,0,0,0,0,0,0,0], -1), [0,0,0,0,0,0,0,0,0]));
 
   @override
   Stream<PlayState> mapEventToState(
@@ -20,7 +20,7 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
       List<int> numbers = [0, 0, 0, 0, 0, 0, 0, 0, 0];
       var position = ran.nextInt(9);
       numbers[position] = 2;
-      yield PlayStart(new Board(numbers, position));
+      yield PlayStart(new Board(numbers, position), numbers);
     } else if (event is SwipeLeft){
       yield* _mapSwipeLeftToState(event);
     } else if (event is SwipeRight){
@@ -29,6 +29,10 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
       yield* _mapSwipeUpToState(event);
     } else if (event is SwipeDown){
       yield* _mapSwipeDownToState(event);
+    } else if (event is QuitGame){
+      yield PlayInitial(new Board([0,0,0,0,0,0,0,0,0], -1), [0,0,0,0,0,0,0,0,0]);
+    } else if (event is GetPreviousState){
+      yield* _mapGetPreviousStateToState(event);
     }
   }
 
@@ -59,54 +63,9 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     return true;
   }
 
-  // Can be directly used if swipeup; 
-  // need to transform matrix before using for other gestures
-  Board processMatrix (List<int> currentBoard){
-    bool isChanged = false;
-    for (int i = currentBoard.length - 1; i >= 3; i--){
-      if (currentBoard[i] == currentBoard[i-3]){
-        currentBoard[i-3] += currentBoard[i];
-        currentBoard[i] = 0;
-        isChanged = true;
-      } else if (currentBoard[i-3] == 0){
-        // shift
-        currentBoard[i-3] = currentBoard[i];
-        currentBoard[i] = 0;
-        isChanged = true;
-      }
-    }
-    for (int i = 0; i <= 2; i++){
-      if (currentBoard[i] == 0){
-        currentBoard[i] = currentBoard[i+3];
-        currentBoard[i+3] = currentBoard[i+6];
-        isChanged = true;
-      }
-    }
-    // randomly choose a slot to add new number
-    if (isChanged){
-      // var result = addNewNumber(currentBoard);
-      var random = new Random();
-      var emptySlots = [];
-      var options = [2, 4];
-      for (int i = 0; i < currentBoard.length; i++){
-        if (currentBoard[i] == 0){
-          emptySlots.add(i);
-        }
-      }
-      var position = emptySlots[random.nextInt(emptySlots.length)];
-      var number = options[random.nextInt(2)];
-      currentBoard[position] = number;
-      // return numbers;
-      // return result;
-      var result = new Board(currentBoard, position);
-      return result;
-    }
-    var result = new Board(currentBoard, -1);
-    return result;
-  }
-
   Stream<PlayState> _mapSwipeUpToState (SwipeUp event) async*{
     List<int> numbers = state.board.numbers;
+    List<int> previous = List.from(numbers);
     List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
     // 2nd row
     for (int i = 3; i <= 5; i++){
@@ -148,20 +107,21 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     }
     Board result = addNewNumber(numbers);
     if (isFull(result.numbers)){
-      yield PlayFailed(new Board(result.numbers, -1));
+      yield PlayFailed(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else if (isSuccessful(numbers)){
-      yield PlaySuccess(new Board(result.numbers, -1));
+      yield PlaySuccess(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else {
       if (state is PlayInProcess1){
-        yield PlayInProcess2(result);
+        yield PlayInProcess2(result, previous);
       } else {
-        yield PlayInProcess1(result);
+        yield PlayInProcess1(result, previous);
       }
     }
   }
 
   Stream<PlayState> _mapSwipeDownToState (SwipeDown event) async*{
     List<int> numbers = state.board.numbers;
+    List<int> previous = List.from(numbers);
     List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
     // process row/col next to the fixed one
     for (int i = 3; i < 6; i++){
@@ -204,20 +164,21 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     }
     Board result = addNewNumber(numbers);
     if (isFull(result.numbers)){
-      yield PlayFailed(new Board(result.numbers, -1));
+      yield PlayFailed(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else if (isSuccessful(numbers)){
-      yield PlaySuccess(new Board(result.numbers, -1));
+      yield PlaySuccess(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else {
       if (state is PlayInProcess1){
-        yield PlayInProcess2(result);
+        yield PlayInProcess2(result, previous);
       } else {
-        yield PlayInProcess1(result);
+        yield PlayInProcess1(result, previous);
       }
     }
   }
 
   Stream<PlayState> _mapSwipeLeftToState(SwipeLeft event) async*{
     List<int> numbers = state.board.numbers;
+    List<int> previous = List.from(numbers);
     List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
     for (int i = 0; i < numbers.length; i++){
       // process row/col next to the fixed one
@@ -263,20 +224,23 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     }
     Board result = addNewNumber(numbers);
     if (isFull(result.numbers)){
-      yield PlayFailed(new Board(result.numbers, -1));
+      yield PlayFailed(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else if (isSuccessful(numbers)){
-      yield PlaySuccess(new Board(result.numbers, -1));
+      yield PlaySuccess(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else {
       if (state is PlayInProcess1){
-        yield PlayInProcess2(result);
+        yield PlayInProcess2(result, previous);
       } else {
-        yield PlayInProcess1(result);
+        yield PlayInProcess1(result, previous);
       }
     }
   }
 
   Stream<PlayState> _mapSwipeRightToState(SwipeRight event) async*{
     List<int> numbers = state.board.numbers;
+    List<int> previous = List.from(numbers);
+    print('previous: ');
+    print(previous);
     List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
     for (int i = 0; i < numbers.length; i++){
       // process row/col next to the fixed one
@@ -311,7 +275,6 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
               }
             } else {
               numbers[i+1] = numbers[i];
-              print('hhhhhhhhhhhhh');
               numbers[i] = 0;
             }
           } else {
@@ -323,15 +286,27 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     }
     Board result = addNewNumber(numbers);
     if (isFull(result.numbers)){
-      yield PlayFailed(new Board(result.numbers, -1));
+      yield PlayFailed(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else if (isSuccessful(numbers)){
-      yield PlaySuccess(new Board(result.numbers, -1));
+      yield PlaySuccess(new Board(result.numbers, -1), [0,0,0,0,0,0,0,0,0]);
     } else {
       if (state is PlayInProcess1){
-        yield PlayInProcess2(result);
+        print('******');
+        print(previous);
+        yield PlayInProcess2(result, previous);
       } else {
-        yield PlayInProcess1(result);
+        print('******');
+        print(previous);
+        yield PlayInProcess1(result, previous);
       }
+    }
+  }
+
+  Stream<PlayState> _mapGetPreviousStateToState(GetPreviousState event) async*{
+    if (state is PlayInProcess1){
+      yield PlayInProcess2(new Board(state.previousBoard, -1), state.previousBoard);
+    } else {
+      yield PlayInProcess1(new Board(state.previousBoard, -1), state.previousBoard);
     }
   }
 
