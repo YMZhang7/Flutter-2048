@@ -180,45 +180,44 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     List<int> numbers = state.board.numbers;
     List<int> previous = List.from(numbers);
     List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
-    for (int i = 0; i < numbers.length; i++){
-      // process row/col next to the fixed one
-      if (i == 1 || i == 4 || i == 7){
-        // same number -> merge
+
+    // process row/col next to the fixed one
+    for (int i = 1; i <= 7; i += 3){
+      // same number -> merge
+      if (numbers[i] == numbers[i-1]){
+        numbers[i-1] *= 2;
+        numbers[i] = 0;
+        isEditted[i-1] = true;
+      } else if(numbers[i-1] == 0){
+        // empty -> shift
+        numbers[i-1] = numbers[i];
+        numbers[i] = 0;
+      }
+    }
+    // third col
+    for (int i = 2; i <= 8; i += 3){
+      if (numbers[i-1] != 0){
         if (numbers[i] == numbers[i-1]){
           numbers[i-1] *= 2;
           numbers[i] = 0;
-          isEditted[i-1] = true;
-        } else if(numbers[i-1] == 0){
-          // empty -> shift
-          numbers[i-1] = numbers[i];
-          numbers[i] = 0;
         }
-      }
-      // third col
-      if (i == 2 || i == 5 || i == 8){
-        if (numbers[i-1] != 0){
-          if (numbers[i] == numbers[i-1]){
-            numbers[i-1] *= 2;
-            numbers[i] = 0;
-          }
-        } else {
-          if (numbers[i-2] != 0){
-            if (numbers[i-2] == numbers[i]){
-              if (isEditted[i-2]){
-                numbers[i-1] = numbers[i];
-                numbers[i] = 0;
-              } else {
-                numbers[i-2] *= 2;
-                numbers[i] = 0;
-              }
-            } else {
+      } else {
+        if (numbers[i-2] != 0){
+          if (numbers[i-2] == numbers[i]){
+            if (isEditted[i-2]){
               numbers[i-1] = numbers[i];
+              numbers[i] = 0;
+            } else {
+              numbers[i-2] *= 2;
               numbers[i] = 0;
             }
           } else {
-            numbers[i-2] = numbers[i];
+            numbers[i-1] = numbers[i];
             numbers[i] = 0;
           }
+        } else {
+          numbers[i-2] = numbers[i];
+          numbers[i] = 0;
         }
       }
     }
@@ -242,9 +241,8 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
     print('previous: ');
     print(previous);
     List<bool> isEditted = [false, false, false, false, false, false, false, false, false];
-    for (int i = 0; i < numbers.length; i++){
-      // process row/col next to the fixed one
-      if (i == 1 || i == 4 || i == 7){
+    // process row/col next to the fixed one
+    for (int i = 1; i <= 7; i += 3){
         // same number -> merge
         if (numbers[i] == numbers[i+1]){
           numbers[i+1] *= 2;
@@ -255,32 +253,31 @@ class PlayBloc extends Bloc<PlayEvent, PlayState> {
           numbers[i+1] = numbers[i];
           numbers[i] = 0;
         }
-      }
+    }
+    for (int i = 0; i <= 6; i += 3){
       // third col
-      if (i == 0 || i == 3 || i == 6){
-        if (numbers[i+1] != 0){
-          if (numbers[i] == numbers[i+1]){
-            numbers[i+1] *= 2;
-            numbers[i] = 0;
-          }
-        } else {
-          if (numbers[i+2] != 0){
-            if (numbers[i+2] == numbers[i]){
-              if (isEditted[i+2]){
-                numbers[i+1] = numbers[i];
-                numbers[i] = 0;
-              } else {
-                numbers[i+2] *= 2;
-                numbers[i] = 0;
-              }
-            } else {
+      if (numbers[i+1] != 0){
+        if (numbers[i] == numbers[i+1]){
+          numbers[i+1] *= 2;
+          numbers[i] = 0;
+        }
+      } else {
+        if (numbers[i+2] != 0){
+          if (numbers[i+2] == numbers[i]){
+            if (isEditted[i+2]){
               numbers[i+1] = numbers[i];
+              numbers[i] = 0;
+            } else {
+              numbers[i+2] *= 2;
               numbers[i] = 0;
             }
           } else {
-            numbers[i+2] = numbers[i];
+            numbers[i+1] = numbers[i];
             numbers[i] = 0;
           }
+        } else {
+          numbers[i+2] = numbers[i];
+          numbers[i] = 0;
         }
       }
     }
