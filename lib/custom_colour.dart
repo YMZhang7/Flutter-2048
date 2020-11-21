@@ -11,4 +11,11 @@ extension CustomColorScheme on ColorScheme {
   Color get cube3 => const Color(0xFF6989A4);
   Color get cube4 => const Color(0xFF634978);
   Color get cube5 => const Color(0xFFD56D6E);
+  Color get cube6 => const Color(0xFFD2977C);
+  Color get cube7 => const Color(0xFFF1CBB5);
+  Color get cube8 => const Color(0xFFF0EBD6);
+  Color get cube9 => const Color(0xFFC0E1D9);
+  Color get cube10 => const Color(0xFFA2BDA2);
+  Color get cube11 => const Color(0xFF638A66);
+
 }

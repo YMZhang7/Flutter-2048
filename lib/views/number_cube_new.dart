@@ -47,8 +47,29 @@ class _NumberCubeNewState extends State<NumberCubeNew> with SingleTickerProvider
       case 16:
         color = Theme.of(context).colorScheme.cube4;
         break;
-      default:
+      case 32:
         color = Theme.of(context).colorScheme.cube5;
+        break;
+      case 64:
+        color = Theme.of(context).colorScheme.cube6;
+        break;
+      case 128:
+        color = Theme.of(context).colorScheme.cube7;
+        break;
+      case 256:
+        color = Theme.of(context).colorScheme.cube8;
+        break;
+      case 512:
+        color = Theme.of(context).colorScheme.cube9;
+        break;
+      case 1024:
+        color = Theme.of(context).colorScheme.cube10;
+        break;
+      default:
+        color = Theme.of(context).colorScheme.cube11;
+        break;
+      // default:
+        // color = Theme.of(context).colorScheme.cube5;
     }
     _controller.forward();
     return FadeTransition(
